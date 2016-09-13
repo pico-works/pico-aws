@@ -4,10 +4,10 @@ import sbt._
 object Build extends sbt.Build {  
   val pico_disposal           = "org.pico"            %%  "pico-disposal"           % "0.6.2"
 
-  val aws_java_sdk_dynamodb   = "com.amazonaws"       %   "aws-java-sdk-dynamodb"   % "1.11.11"
-  val aws_java_sdk_kinesis    = "com.amazonaws"       %   "aws-java-sdk-kinesis"    % "1.11.11"
-  val aws_java_sdk_s3         = "com.amazonaws"       %   "aws-java-sdk-s3"         % "1.11.11"
-  val aws_java_sdk_sqs        = "com.amazonaws"       %   "aws-java-sdk-sqs"        % "1.11.11"
+  val aws_java_sdk_dynamodb   = "com.amazonaws"       %   "aws-java-sdk-dynamodb"   % "1.11.33"
+  val aws_java_sdk_kinesis    = "com.amazonaws"       %   "aws-java-sdk-kinesis"    % "1.11.33"
+  val aws_java_sdk_s3         = "com.amazonaws"       %   "aws-java-sdk-s3"         % "1.11.33"
+  val aws_java_sdk_sqs        = "com.amazonaws"       %   "aws-java-sdk-sqs"        % "1.11.33"
 
   val specs2_core             = "org.specs2"          %%  "specs2-core"             % "3.7.2"
 
