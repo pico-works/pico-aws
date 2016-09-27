@@ -1,0 +1,5 @@
+aws.region = AWS_REGION
+
+sqs {
+  queue-1 = QUEUE_1
+}
