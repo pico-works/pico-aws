@@ -40,6 +40,8 @@ object SqsDecode {
     override def pure[A](x: A): SqsDecode[A] = SqsDecode(_ => Right(x))
   }
 
+  def on[A: SqsDecode]: SqsDecode[A] = implicitly[SqsDecode[A]]
+
   def apply[A](f: SqsMessageContext => Either[SqsDecodeException, A]): SqsDecode[A] = {
     new SqsDecode[A] {
       override def sqsDecode(sqsMessageContext: SqsMessageContext): Either[SqsDecodeException, A] = {

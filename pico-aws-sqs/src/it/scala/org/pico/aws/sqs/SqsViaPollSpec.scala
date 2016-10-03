@@ -18,13 +18,13 @@ class SqsViaPollSpec extends Specification {
     val config = ConfigFactory.load("application.conf")
     val region = config.getString("aws.region")
     val sqsQueue1Name = config.getString("sqs.queue-1")
-    val messageBus = Bus[SqsMessageEnvelope[SqsMessageBody]]
+    val messageBus = Bus[SqsMessageEnvelope[UpperCased]]
 
     for {
       client    <- Auto(new AmazonSQSAsyncClient)
       _         <- Eval(client.setRegion(Region.getRegion(Regions.fromName(region))))
       queueUrl  <- Eval(client.getQueueUrl(sqsQueue1Name).getQueueUrl)
-      poll      <- Auto(client.asyncPoll[SqsMessageBody](queueUrl, parallelism = 5))
+      poll      <- Auto(client.asyncPoll[UpperCased](queueUrl, parallelism = 5))
       doneBus   <- Auto(client.doneBus[Any])
       doneCount <- Auto(doneBus.asSource.eventCount)
       _         <- Auto(OnClose(println(s"Messages done: ${doneCount.value}")))
