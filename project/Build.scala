@@ -2,8 +2,8 @@ import sbt.Keys._
 import sbt._
 
 object Build extends sbt.Build {
-  val pico_disposal           = "org.pico"            %%  "pico-disposal"           % "1.0.4"
-  val pico_event              = "org.pico"            %%  "pico-event"              % "2.0.2"
+  val pico_disposal           = "org.pico"            %%  "pico-disposal"           % "1.0.5"
+  val pico_event              = "org.pico"            %%  "pico-event"              % "3.0.0"
 
   val aws_java_sdk_core       = "com.amazonaws"       %   "aws-java-sdk-core"       % "1.11.39"
   val aws_java_sdk_dynamodb   = "com.amazonaws"       %   "aws-java-sdk-dynamodb"   % "1.11.39"
@@ -21,6 +21,7 @@ object Build extends sbt.Build {
           .settings(publishTo := Some("Releases" at "s3://dl.john-ky.io/maven/releases"))
           .settings(description := theDescription)
           .settings(isSnapshot := true)
+          .settings(addCompilerPlugin("org.spire-math" % "kind-projector" % "0.9.0" cross CrossVersion.binary))
     }
 
     def notPublished = self.settings(publish := {}).settings(publishArtifact := false)
