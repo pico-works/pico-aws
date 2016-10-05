@@ -10,6 +10,7 @@ object Build extends sbt.Build {
   val aws_java_sdk_kinesis    = "com.amazonaws"       %   "aws-java-sdk-kinesis"    % "1.11.39"
   val aws_java_sdk_s3         = "com.amazonaws"       %   "aws-java-sdk-s3"         % "1.11.39"
   val aws_java_sdk_sqs        = "com.amazonaws"       %   "aws-java-sdk-sqs"        % "1.11.39"
+  val circe_core              = "io.circe"            %%  "circe-core"              % "0.5.1"
 
   val specs2_core             = "org.specs2"          %%  "specs2-core"             % "3.7.2"
   val typesafe_config         = "com.typesafe"        %   "config"                  % "1.3.1"
@@ -44,7 +45,7 @@ object Build extends sbt.Build {
   lazy val `pico-aws-dynamodb` = Project(id = "pico-aws-dynamodb", base = file("pico-aws-dynamodb"))
       .standard("pico-event shim library for aws-dynamodb").it
       .dependsOn(`pico-aws-core`)
-      .libs(pico_disposal, aws_java_sdk_dynamodb)
+      .libs(pico_disposal, aws_java_sdk_dynamodb, circe_core)
       .testLibs(specs2_core)
       .itLibs(typesafe_config)
 
