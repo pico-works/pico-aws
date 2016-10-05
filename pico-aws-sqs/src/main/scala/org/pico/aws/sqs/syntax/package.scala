@@ -8,7 +8,7 @@ import com.amazonaws.services.sqs.model._
 import org.pico.aws.core.Async
 import org.pico.disposal.SimpleDisposer
 import org.pico.disposal.std.autoCloseable._
-import org.pico.event.{Bus, Source}
+import org.pico.event.{Bus, Sink, SinkSource, Source}
 
 import scala.collection.JavaConverters._
 import scala.concurrent.duration.Duration
@@ -90,7 +90,7 @@ package object syntax {
 
       messagesBus.onClose(done.set(true))
 
-      new SqsPolled[A] with SimpleDisposer { self =>
+      new SqsPolled[A] { self =>
         override def messages: Source[SqsMessageEnvelope[A]] = self.disposes(messagesBus)
         override def errors: Source[Throwable] = self.disposes(errorsBus)
       }
@@ -118,9 +118,38 @@ package object syntax {
         self.receiveMessageAsync(receiveMessageRequest, handler)
       }
     }
+
+    def sendTo[A: SqsEncode](
+        queueUrl: String)(implicit ev: ExecutionContext): SinkSource[A, Option[Future[(A, SendMessageResult)]]] = {
+      SinkSource[A, Option[Future[(A, SendMessageResult)]]] { a =>
+        val message: SqsEncodedMessage = a.sqsEncode
+
+        val maybeQueueUrl = message.queueUrl match {
+          case Some(url)  => if (url == queueUrl) message.queueUrl else None
+          case None       => Some(queueUrl)
+        }
+
+        maybeQueueUrl map { targetQueueUrl =>
+          val request = new SendMessageRequest {
+            this.setQueueUrl(queueUrl)
+
+            message.body.foreach(body => this.setMessageBody(body.body))
+          }
+
+          Async.handle[SendMessageRequest, SendMessageResult] { handler =>
+            self.sendMessageAsync(request, handler)
+          }.map(v => (a, v._2))
+        }
+      }
+    }
   }
 
   implicit class SqsMessageContextOps_9xksP7M[A](val self: SqsReceiveContext[Seq[A]]) extends AnyVal {
     def sequence: Seq[SqsReceiveContext[A]] = self.value.map(v => SqsReceiveContext(self.request, v))
+  }
+
+  implicit class IpOps_9xksP7M[A](val self: A) extends AnyVal {
+    @inline
+    def sqsEncode(implicit ev: SqsEncode[A]): SqsEncodedMessage = ev.sqsEncode(self)
   }
 }
