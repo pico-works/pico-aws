@@ -1,16 +1,8 @@
 package org.pico.aws.dynamodb
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient
-import com.amazonaws.services.dynamodbv2.model.{CreateTableRequest, StreamSpecification}
+import org.pico.aws.dynamodb.model.CreateTableRequest
 
 case class DynamoDbClient(impl: AmazonDynamoDBAsyncClient) {
-  def createTable(): Unit = {
-    val request = new CreateTableRequest()
-
-    val streamSpecification = new StreamSpecification()
-
-    request.setStreamSpecification(streamSpecification)
-
-    impl.createTable(request)
-  }
+  def createTable(request: CreateTableRequest): Unit = impl.createTable(request.toAws)
 }
