@@ -3,7 +3,7 @@ import sbt._
 
 object Build extends sbt.Build {
   val pico_disposal           = "org.pico"            %%  "pico-disposal"           % "1.0.6"
-  val pico_event              = "org.pico"            %%  "pico-event"              % "3.0.4"
+  val pico_event              = "org.pico"            %%  "pico-event"              % "3.0.5"
 
   val aws_java_sdk_core       = "com.amazonaws"       %   "aws-java-sdk-core"       % "1.11.39"
   val aws_java_sdk_dynamodb   = "com.amazonaws"       %   "aws-java-sdk-dynamodb"   % "1.11.39"
