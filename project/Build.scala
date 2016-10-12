@@ -78,5 +78,5 @@ object Build extends sbt.Build {
 
   lazy val all = Project(id = "pico-aws-project", base = file("."))
       .notPublished
-      .aggregate(`pico-aws-dynamodb`, `pico-aws-kinesis`, `pico-aws-s3`, `pico-aws-sqs`)
+      .aggregate(`pico-aws-core`, `pico-aws-dynamodb`, `pico-aws-kinesis`, `pico-aws-s3`, `pico-aws-sqs`)
 }
