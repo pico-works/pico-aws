@@ -51,49 +51,9 @@ package object syntax {
         visibilityTimeout: Option[Duration] = None,
         waitTimeSeconds: Option[Duration] = None,
         parallelism: Int = 1)(implicit ec: ExecutionContext): SqsPolled[A] = {
-      val messagesBus = Bus[SqsMessageEnvelope[A]]
-      val errorsBus   = Bus[Throwable]
-      val done = new AtomicBoolean(false)
-
-      def doReceive(): Unit = {
-        if (!done.get) {
-          val future = asyncReceive(
-            queueUrl, attributeNames, messageAttributeNames, maxNumberOfMessages,
-            visibilityTimeout, waitTimeSeconds)
-
-          future.onComplete { completion =>
-            try {
-              val (request, result) = completion.get
-
-              result.getMessages.asScala.foreach { (message: Message) =>
-                try {
-                  val context = new SqsMessageContext(request, result, message)
-
-                  context.sqsDecode[A] match {
-                    case Right(value) => messagesBus.publish(SqsMessageEnvelope(context, value))
-                    case Left(e) => errorsBus.publish(e)
-                  }
-                } catch {
-                  case NonFatal(e) => errorsBus.publish(e)
-                }
-              }
-            } catch {
-              case NonFatal(e) => errorsBus.publish(e)
-            }
-
-            doReceive()
-          }
-        }
-      }
-
-      (0 until parallelism).foreach(_ => doReceive())
-
-      messagesBus.onClose(done.set(true))
-
-      new SqsPolled[A] { self =>
-        override def messages: Source[SqsMessageEnvelope[A]] = self.disposes(messagesBus)
-        override def errors: Source[Throwable] = self.disposes(errorsBus)
-      }
+      SqsPolled.asyncPoll(
+        self, queueUrl, attributeNames, messageAttributeNames,
+        maxNumberOfMessages, visibilityTimeout, waitTimeSeconds, parallelism)
     }
 
     def asyncReceive(
