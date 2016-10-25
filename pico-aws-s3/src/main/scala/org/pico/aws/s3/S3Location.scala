@@ -2,7 +2,9 @@ package org.pico.aws.s3
 
 import com.amazonaws.services.s3.AmazonS3URI
 
-case class S3Location(bucket: S3BucketName, key: S3Key)
+case class S3Location(bucket: S3BucketName, key: S3Key) {
+  override def toString: String = s"s3://${bucket.name}/${key.path}"
+}
 
 object S3Location {
   @inline
